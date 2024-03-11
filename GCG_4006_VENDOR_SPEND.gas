@@ -1,0 +1,266 @@
+Program.Sub.ScreenSU.Start
+gui.Form1..create
+gui.Form1..caption("Select Date Range")
+gui.Form1..size(4635,1920)
+gui.Form1..minx(0)
+gui.Form1..miny(0)
+gui.Form1..position(0,0)
+gui.Form1..event(unload,form1_unload)
+gui.Form1..alwaysontop(False)
+gui.Form1..fontname("Arial")
+gui.Form1..fontsize(8)
+gui.Form1..forecolor(0)
+gui.Form1..fontstyle(,,,,)
+gui.Form1..BackColor(-2147483633)
+gui.Form1..controlbox(True)
+gui.Form1..maxbutton(True)
+gui.Form1..minbutton(True)
+gui.Form1..mousepointer(0)
+gui.Form1..moveable(True)
+gui.Form1..sizeable(False)
+gui.Form1..ShowInTaskBar(True)
+gui.Form1..titlebar(True)
+gui.Form1.datepickerBegDate.create(datepicker)
+gui.Form1.datepickerBegDate.visible(True)
+gui.Form1.datepickerBegDate.size(1935,285)
+gui.Form1.datepickerBegDate.zorder(0)
+gui.Form1.datepickerBegDate.position(100,300)
+gui.Form1.datepickerBegDate.enabled(True)
+gui.Form1.datepickerBegDate.checkbox(False)
+gui.Form1.datepickerBegDate.event(lostfocus,datepickerbegdate_lostfocus)
+gui.Form1.datepickerBegDate.defaultvalue("")
+gui.Form1.datepickerBegDate.controlgroup(0)
+gui.Form1.datepickerEndDate.create(datepicker)
+gui.Form1.datepickerEndDate.visible(True)
+gui.Form1.datepickerEndDate.size(1935,285)
+gui.Form1.datepickerEndDate.zorder(0)
+gui.Form1.datepickerEndDate.position(2300,300)
+gui.Form1.datepickerEndDate.enabled(True)
+gui.Form1.datepickerEndDate.checkbox(False)
+gui.Form1.datepickerEndDate.defaultvalue("")
+gui.Form1.datepickerEndDate.controlgroup(0)
+gui.Form1.cmdPrint.create(button)
+gui.Form1.cmdPrint.caption("Print")
+gui.Form1.cmdPrint.visible(True)
+gui.Form1.cmdPrint.size(855,375)
+gui.Form1.cmdPrint.zorder(0)
+gui.Form1.cmdPrint.position(100,800)
+gui.Form1.cmdPrint.enabled(True)
+gui.Form1.cmdPrint.fontname("Arial")
+gui.Form1.cmdPrint.fontsize(8)
+gui.Form1.cmdPrint.event(click,cmdprint_click)
+gui.Form1.cmdPrint.defaultvalue("")
+gui.Form1.cmdPrint.controlgroup(0)
+gui.Form1.lbl1.create(label,"Beginning Date",True,1935,255,1,125,120,True,0,Arial,8,-2147483633,0)
+gui.Form1.lbl1.defaultvalue("")
+gui.Form1.lbl1.controlgroup(0)
+gui.Form1.lbl2.create(label,"Ending Date",True,1935,255,1,2300,100,True,0,Arial,8,-2147483633,0)
+gui.Form1.lbl2.defaultvalue("")
+gui.Form1.lbl2.controlgroup(0)
+gui.Form1.datepickerBegDate.tabstop(True)
+gui.Form1.datepickerBegDate.tabindex(1)
+gui.Form1.datepickerEndDate.tabstop(True)
+gui.Form1.datepickerEndDate.tabindex(2)
+gui.Form1.cmdPrint.tabstop(True)
+gui.Form1.cmdPrint.tabindex(3)
+
+
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Variable.Global.sDate.Declare(String)
+Variable.Global.eDate.Declare(String)
+Variable.UDT.uReport.Define("VENDOR",String,VENDOR)
+Variable.UDT.uReport.Define("VENDOR_NAME",String,VENDOR_NAME)
+Variable.UDT.uReport.Define("ADDRESS_1",String,ADDRESS_1)
+Variable.UDT.uReport.Define("CITY",String,CITY)
+Variable.UDT.uReport.Define("STATE",String,STATE)
+Variable.UDT.uReport.Define("ZIP",String,ZIP)
+Variable.UDT.uReport.Define("PHONE_NO",String,PHONE_NO)
+Variable.UDT.uReport.Define("AMT_SPEND",Float,AMT_SPEND)
+Variable.UDT.uReport.Define("BIRUNID",Long)
+Variable.uGlobal.uReport.Declare("uReport")
+Variable.uGlobal.uRepHist.Declare("uReport")
+Variable.Global.iBILogID.Declare(Long,0)
+Variable.Global.iBIRunID.Declare(Long,0)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'Coded By: SFF
+'07/29/2014
+'Vendor Spend Report for NCS Energy
+
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+F.ODBC.Connection!conX.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+F.ODBC.Connection!conX.Execute("delete from GCG_4006_VEND_SPEND")
+Gui.Form1..Show
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4006_VENDOR_SPEND.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+program.sub.form1_unload.start
+F.ODBC.Connection!conX.Close
+F.Intrinsic.Control.end
+
+program.sub.form1_unload.end
+
+program.sub.cmdprint_click.start
+F.Intrinsic.Control.SetErrorHandler("cmdprint_click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sSql.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.sDate.Declare(String)
+V.Local.eDate.Declare(String)
+V.Local.iRPTID.Declare(Long)
+'F.Intrinsic.Debug.InvokeDebugger
+'F.Intrinsic.Debug.Stop
+
+'HIDE SCREEN AND FORMATE DATES FOR SQL
+Gui.Form1..Visible(false)
+
+'REDIM UDT
+V.uGlobal.uRepHist.Redim(-1,-1)
+V.uGlobal.uReport.Redim(-1,-1)
+
+F.Intrinsic.String.Format(V.Screen.Form1!datepickerBegDate.Value,"YYYY-MM-DD",V.Local.sDate)
+F.Intrinsic.String.Format(V.Screen.Form1!datepickerEndDate.Value,"YYYY-MM-DD",V.Local.eDate)
+
+'SET GLOBAL VARIABLES FOR REPORT PARAM VALS
+V.Global.sDate.Set(V.Screen.Form1!datepickerBegDate.Value)
+V.Global.eDate.Set(V.Screen.Form1!datepickerEndDate.Value)
+
+'GET RUN ID START LOGGING
+F.Global.BI.GetRunID(V.Global.iBIRunID)
+F.Global.BI.startLogging(V.Global.iBIRunID,V.Local.iRPTID,-1,"",V.Global.iBILogID)
+
+'GET RECORDS FROM GL_DETAIL AND GL_DETAIL_HIST TIED TO VENDOR TABLES AND BASED ON DATE RANGE SELECTED
+F.Intrinsic.String.Concat("SELECT SUM(A.AMOUNT) AS AMT_SPEND, A.VENDOR AS VENDOR, B.NAME_VENDOR AS VENDOR_NAME, B.ADDRESS1 AS ADDRESS_1, B.CITY AS CITY, B.STATE AS STATE, B.CODE_ZIP  AS ZIP, C.BUY_PHONE AS PHONE_NO FROM V_GL_DETAIL AS A LEFT JOIN V_VENDOR_MASTER AS B ON A.VENDOR = B.VENDOR LEFT JOIN V_VEND_MSTR_ADDL AS C ON B.VENDOR = C.VEND_NO WHERE GL_ACCOUNT IN ('20001.01', '20001.02') AND DB_CR_FLAG = 'D' AND POST_DATE BETWEEN '",V.local.sDate,"' AND '",V.local.eDate,"' GROUP BY VENDOR, NAME_VENDOR, ADDRESS1, CITY, STATE, CODE_ZIP, BUY_PHONE",V.local.sSql)
+F.ODBC.Connection!conX.OpenLocalRecordsetRO("rst",V.Local.sSql)
+F.Intrinsic.Control.If(V.ODBC.conX!rst.EOF,=,False)
+	F.Intrinsic.Variable.LoadUDTFromRecordset("conX","rst","v.uGlobal.uReport",False)
+	F.ODBC.conX!rst.Close
+F.Intrinsic.Control.Else
+F.ODBC.conX!rst.Close
+F.Intrinsic.Control.endif
+
+F.Intrinsic.String.Concat("SELECT SUM(A.AMOUNT) AS AMT_SPEND, A.VENDOR AS VENDOR, B.NAME_VENDOR AS VENDOR_NAME, B.ADDRESS1 AS ADDRESS_1, B.CITY AS CITY, B.STATE AS STATE, B.CODE_ZIP AS ZIP, C.BUY_PHONE AS PHONE_NO FROM V_GL_DETAIL_HISTORY AS A LEFT JOIN V_VENDOR_MASTER AS B ON A.VENDOR = B.VENDOR LEFT JOIN V_VEND_MSTR_ADDL AS C ON B.VENDOR = C.VEND_NO WHERE GL_ACCOUNT IN ('20001.01', '20001.02') AND DB_CR_FLAG = 'D' AND POST_DATE BETWEEN '",V.local.sDate,"' AND '",V.local.eDate,"' GROUP BY VENDOR, NAME_VENDOR, ADDRESS1, CITY, STATE, CODE_ZIP, BUY_PHONE",V.local.sSql)
+F.ODBC.Connection!conX.OpenLocalRecordsetRO("rst",V.Local.sSql)
+F.Intrinsic.Control.If(V.ODBC.conX!rst.EOF,=,False)
+	F.Intrinsic.Variable.LoadUDTFromRecordset("conX","rst","v.uGlobal.uRepHist",True)
+	F.ODBC.conX!rst.Close
+F.Intrinsic.Control.Else
+F.ODBC.conX!rst.Close
+F.Intrinsic.Control.endif
+
+F.Intrinsic.Variable.UDTMultiQuickSort(V.uGlobal.uReport!VENDOR_NAME,False)
+
+'CHECK TO SEE IF RECORDS EXIST IN UDT, IF NOT SHOW MSG "NO RECORDS" AND EXIT SUB
+F.Intrinsic.Control.If(V.uGlobal.uRepHist.UBound,=,-1,"AND",V.uGlobal.uReport.UBound,=,-1)
+	F.Intrinsic.UI.Msgbox("No Records Exist for the Selected Date Range","No Records")
+	Gui.Form1..Show
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uRepHist!BIRUNID,"BIRUNID")
+F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!BIRUNID,"BIRUNID")
+F.Intrinsic.Variable.UDTSetMemberValue(V.uGlobal.uRepHist!BIRUNID,V.Global.iBIRunID)
+F.Intrinsic.Variable.UDTSetMemberValue(V.uGlobal.uReport!BIRUNID,V.Global.iBIRunID)
+
+
+'SAVE UDT TO BI TABLE
+F.ODBC.Connection!conX.OpenRecordsetRW("rst","select * from GCG_4006_VEND_SPEND")
+F.Intrinsic.Control.If(V.uGlobal.uRepHist.UBound,<>,-1)
+	F.Intrinsic.Variable.SaveUDTToRecordset("conX","rst","v.uGlobal.uRepHist")
+F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.If(V.uGlobal.uReport.UBound,<>,-1)
+	F.Intrinsic.Variable.SaveUDTToRecordset("conX","rst","v.uGlobal.uReport")
+F.Intrinsic.Control.EndIf
+F.ODBC.conX!rst.Close
+
+
+'CALL BI SUB TO RUN REPORT AND END PROGRAM AFTER
+F.Intrinsic.Control.CallSub(Callbi)
+
+F.Intrinsic.Control.CallSub(Form1_unload)
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdprint_click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4006_VENDOR_SPEND.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.cmdprint_click.end
+
+program.sub.datepickerbegdate_lostfocus.start
+F.Intrinsic.Control.SetErrorHandler("datepickerbegdate_lostfocus_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+Gui.Form1.datepickerEndDate.Value(V.Screen.Form1!datepickerBegDate.Value)
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("datepickerbegdate_lostfocus_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4006_VENDOR_SPEND.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.datepickerbegdate_lostfocus.end
+
+Program.Sub.CallBI.Start
+F.Intrinsic.Control.SetErrorHandler("CallBI_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sParams.Declare(String)
+V.Local.sValues.Declare(String)
+V.Local.iRet.Declare(Long)
+
+'SET PARAMS AND VALS AND RUN REPORT
+V.Local.sParams.Set("RUNID*!*sDate*!*eDate")
+F.Intrinsic.String.Concat(V.Global.iBIRunID,"*!*",V.Global.sDate,"*!*",V.Global.eDate,V.Local.sValues)
+F.Global.BI.RunReportPreProcessor(V.Global.iBIRunID,V.Global.iBILogID,V.Local.sParams,V.Local.sValues,"",-1,True,"",-1,"",-1,"","",V.Local.iRet)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("CallBI_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4006_VENDOR_SPEND.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.CallBI.End
+
+Program.Sub.Comments.Start
+${$0$}$GCG_VENDOR_SPEND$}$SFF$}$7/25/2014
+Program.Sub.Comments.End
+
